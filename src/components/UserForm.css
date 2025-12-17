@@ -1,0 +1,146 @@
+.user-form-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 40px;
+  animation: slideUp 0.3s;
+}
+
+.user-form-modal h2 {
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.user-form-modal .close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: white;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-form-modal .close-btn:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.user-form {
+  margin-top: 20px;
+}
+
+.user-form .form-group {
+  margin-bottom: 20px;
+}
+
+.user-form .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.user-form .form-group input,
+.user-form .form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  transition: border-color 0.3s;
+}
+
+.user-form .form-group input:focus,
+.user-form .form-group select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.role-description {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #666;
+  font-style: italic;
+}
+
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border-left: 4px solid #f44336;
+}
+
+.user-form .form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+  justify-content: flex-end;
+}
+
+.user-form .btn-cancel {
+  padding: 12px 30px;
+  background: #757575;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.user-form .btn-cancel:hover {
+  background: #616161;
+}
+
+.user-form .btn-submit {
+  padding: 12px 30px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.user-form .btn-submit:hover {
+  background: #5568d3;
+}
+
+@media (max-width: 768px) {
+  .user-form-modal {
+    padding: 25px;
+    width: 95%;
+  }
+
+  .user-form .form-actions {
+    flex-direction: column;
+  }
+
+  .user-form .btn-cancel,
+  .user-form .btn-submit {
+    width: 100%;
+  }
+}

@@ -1,0 +1,105 @@
+.confirm-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  min-width: 350px;
+  max-width: 450px;
+  z-index: 10001;
+  animation: slideInLeft 0.3s ease-out;
+  border-left: 4px solid #ff9800;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.confirm-toast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  color: #ff9800;
+}
+
+.confirm-toast-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.confirm-toast-message {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+  line-height: 1.5;
+}
+
+.confirm-toast-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.confirm-btn-cancel,
+.confirm-btn-confirm {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.confirm-btn-cancel {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.confirm-btn-cancel:hover {
+  background: #d0d0d0;
+}
+
+.confirm-btn-confirm {
+  background: #f44336;
+  color: white;
+}
+
+.confirm-btn-confirm:hover {
+  background: #d32f2f;
+}
+
+@media (max-width: 768px) {
+  .confirm-toast {
+    left: 20px;
+    right: 20px;
+    min-width: auto;
+    max-width: none;
+  }
+
+  .confirm-toast-actions {
+    flex-direction: column;
+  }
+
+  .confirm-btn-cancel,
+  .confirm-btn-confirm {
+    width: 100%;
+  }
+}

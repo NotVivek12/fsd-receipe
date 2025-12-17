@@ -1,70 +1,248 @@
-# Getting Started with Create React App
+# Recipe Sharing App - MERN Stack
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full-featured recipe sharing application built with MongoDB, Express, React, and Node.js. This application allows **everyone to browse recipes without login**, while **admins can access a special dashboard** via `/admin` route to perform CRUD operations.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+### Public Features (No Login Required)
+- 👀 **Browse Recipes**: View all recipes without authentication
+- 🔍 **Search & Filter**: Find recipes by category, difficulty, or keywords
+- � **Detailed View**: See complete recipe details including ingredients, instructions, prep time, and cook time
+- 📱 **Responsive Design**: Mobile-friendly interface
+- 🚀 **Instant Access**: No registration or login needed for browsing
 
-### `npm start`
+### Admin Features (Login Required at `/admin`)
+- 🔐 **Secure Admin Login**: Access via `/admin` route only
+- ➕ **Create Recipes**: Add new recipes with full details
+- ✏️ **Edit Recipes**: Update existing recipes
+- 🗑️ **Delete Recipes**: Remove recipes from the database
+- � **Dashboard Statistics**: View recipe counts by category
+- 🎯 **Full CRUD Operations**: Complete recipe management
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Authentication
+- � **Admin-Only Login**: JWT-based authentication for administrators
+- �️ **Role-based Access**: Protected routes for admin operations
+- 🎭 **Public Access**: No login required for regular users
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Tech Stack
 
-### `npm test`
+### Frontend
+- React 19.2
+- Axios for API calls
+- Context API for state management
+- CSS3 for styling
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Backend
+- Node.js with Express
+- MongoDB with Mongoose
+- JWT for authentication
+- Bcrypt for password hashing
 
-### `npm run build`
+## Installation & Setup
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB (local or MongoDB Atlas)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Backend Setup
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. Navigate to the server directory:
+```bash
+cd server
+```
 
-### `npm run eject`
+2. Install dependencies:
+```bash
+npm install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+3. Configure environment variables:
+   - Open `server/.env` file
+   - Update `MONGODB_URI` with your MongoDB connection string
+   - Update `JWT_SECRET` with a secure secret key
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+4. Start MongoDB (if running locally):
+```bash
+# Windows
+net start MongoDB
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# macOS/Linux
+sudo systemctl start mongod
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+5. Start the backend server:
+```bash
+npm run dev
+```
 
-## Learn More
+The backend server will run on `http://localhost:5000`
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Frontend Setup
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. Navigate to the root directory (if you're in server folder):
+```bash
+cd ..
+```
 
-### Code Splitting
+2. Install dependencies:
+```bash
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+3. Start the React development server:
+```bash
+npm start
+```
 
-### Analyzing the Bundle Size
+The frontend will run on `http://localhost:3000`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Usage
 
-### Making a Progressive Web App
+### For Everyone (No Login Required)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+1. Visit `http://localhost:3000`
+2. Browse all available recipes
+3. Use search and filters to find specific recipes
+4. Click **View Recipe** to see full details
+5. Enjoy cooking! 🍳
 
-### Advanced Configuration
+### For Administrators
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+1. Navigate to `http://localhost:3000/admin`
+2. Login with admin credentials
+3. Access the admin dashboard with statistics
+4. Click **+ Add Recipe** to create a new recipe
+5. Click **Edit** on any recipe card to modify it
+6. Click **Delete** on any recipe card to remove it
 
-### Deployment
+### Creating Your First Admin Account
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+**Using API (Postman or PowerShell):**
 
-### `npm run build` fails to minify
+```powershell
+Invoke-RestMethod -Uri "http://localhost:5000/api/auth/register" -Method POST -Headers @{"Content-Type"="application/json"} -Body '{"username":"admin","email":"admin@example.com","password":"admin123","role":"admin"}'
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Or using cURL:**
+
+```bash
+curl -X POST http://localhost:5000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","email":"admin@example.com","password":"admin123","role":"admin"}'
+```
+
+## Project Structure
+
+```
+recipe/
+├── server/                 # Backend
+│   ├── models/            # MongoDB models
+│   │   ├── User.js
+│   │   └── Recipe.js
+│   ├── routes/            # API routes
+│   │   ├── auth.js
+│   │   └── recipes.js
+│   ├── middleware/        # Authentication middleware
+│   │   └── auth.js
+│   ├── .env              # Environment variables
+│   ├── server.js         # Entry point
+│   └── package.json
+│
+├── src/                   # Frontend
+│   ├── components/       # React components
+│   │   ├── Navbar.js
+│   │   ├── Login.js
+│   │   ├── Register.js
+│   │   ├── RecipeCard.js
+│   │   ├── RecipeModal.js
+│   │   └── RecipeForm.js
+│   ├── context/          # Context API
+│   │   └── AuthContext.js
+│   ├── services/         # API services
+│   │   └── api.js
+│   ├── App.js
+│   ├── App.css
+│   └── index.js
+│
+├── public/
+├── package.json
+└── README.md
+```
+
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/me` - Get current user (requires authentication)
+
+### Recipes
+- `GET /api/recipes` - Get all recipes (public)
+- `GET /api/recipes/:id` - Get single recipe (public)
+- `POST /api/recipes` - Create recipe (admin only)
+- `PUT /api/recipes/:id` - Update recipe (admin only)
+- `DELETE /api/recipes/:id` - Delete recipe (admin only)
+
+## Sample Data
+
+Here's a sample recipe you can create:
+
+**Title**: Classic Chocolate Chip Cookies
+
+**Description**: Delicious homemade chocolate chip cookies that are crispy on the outside and chewy on the inside.
+
+**Category**: Dessert
+
+**Difficulty**: Easy
+
+**Prep Time**: 15 minutes
+
+**Cook Time**: 12 minutes
+
+**Servings**: 24 cookies
+
+**Ingredients**:
+- 2 1/4 cups all-purpose flour
+- 1 tsp baking soda
+- 1 cup butter, softened
+- 3/4 cup sugar
+- 2 large eggs
+- 2 cups chocolate chips
+
+**Instructions**:
+1. Preheat oven to 375°F
+2. Mix flour and baking soda in a bowl
+3. Cream butter and sugar until fluffy
+4. Add eggs one at a time
+5. Gradually stir in flour mixture
+6. Fold in chocolate chips
+7. Drop spoonfuls onto baking sheet
+8. Bake for 10-12 minutes until golden
+
+## Security Features
+
+- Passwords are hashed using bcrypt
+- JWT tokens for secure authentication
+- Protected routes for admin operations
+- Input validation on both frontend and backend
+
+## Future Enhancements
+
+- Image upload functionality
+- User ratings and reviews
+- Favorite recipes
+- Recipe categories management
+- Print recipe feature
+- Social sharing
+
+## License
+
+This project is open source and available for educational purposes.
+
+## Support
+
+For issues or questions, please create an issue in the repository.
+
+---
+
+Built with ❤️ using the MERN Stack
