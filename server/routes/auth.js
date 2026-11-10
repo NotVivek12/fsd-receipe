@@ -1,26 +1,41 @@
 const express = require('express');
-const router = express.Router();
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const { createId, readDatabase, writeDatabase } = require('../storage');
 const { authenticate } = require('../middleware/auth');
+
+const router = express.Router();
+
+function publicUser(user) {
+  return {
+    id: user._id,
+    username: user.username,
+    email: user.email,
+    role: user.role,
+  };
+}
 
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
+    const database = await readDatabase();
+    const normalizedEmail = email.toLowerCase();
 
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-    if (existingUser) {
+    if (database.users.some((user) => user.email === normalizedEmail || user.username === username)) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    const user = new User({
+    const user = {
+      _id: createId(),
       username,
-      email,
-      password,
+      email: normalizedEmail,
+      password: await bcrypt.hash(password, 10),
       role: role || 'user',
-    });
+      createdAt: new Date().toISOString(),
+    };
 
-    await user.save();
+    database.users.push(user);
+    await writeDatabase(database);
 
     const token = jwt.sign(
       { userId: user._id, role: user.role },
@@ -31,12 +46,7 @@ router.post('/register', async (req, res) => {
     res.status(201).json({
       message: 'User registered successfully',
       token,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-      },
+      user: publicUser(user),
     });
   } catch (error) {
     console.error(error);
@@ -47,14 +57,10 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    const database = await readDatabase();
+    const user = database.users.find((candidate) => candidate.email === email.toLowerCase());
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
@@ -64,35 +70,15 @@ router.post('/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    res.json({
-      message: 'Login successful',
-      token,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-      },
-    });
+    res.json({ message: 'Login successful', token, user: publicUser(user) });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
-router.get('/me', authenticate, async (req, res) => {
-  try {
-    res.json({
-      user: {
-        id: req.user._id,
-        username: req.user.username,
-        email: req.user.email,
-        role: req.user.role,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
+router.get('/me', authenticate, (req, res) => {
+  res.json({ user: req.user });
 });
 
 module.exports = router;

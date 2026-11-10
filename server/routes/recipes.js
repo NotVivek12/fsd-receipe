@@ -1,25 +1,30 @@
 const express = require('express');
-const router = express.Router();
-const Recipe = require('../models/Recipe');
+const { createId, readDatabase, writeDatabase } = require('../storage');
 const { authenticate, isAdmin } = require('../middleware/auth');
+
+const router = express.Router();
+
+function withCreator(recipe, database) {
+  const creator = database.users.find((user) => user._id === recipe.createdBy);
+  return {
+    ...recipe,
+    createdBy: creator ? { _id: creator._id, username: creator.username, email: creator.email } : null,
+  };
+}
 
 router.get('/', async (req, res) => {
   try {
     const { category, difficulty, search } = req.query;
-    let query = {};
-
-    if (category) query.category = category;
-    if (difficulty) query.difficulty = difficulty;
-    if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-      ];
-    }
-
-    const recipes = await Recipe.find(query)
-      .populate('createdBy', 'username')
-      .sort({ createdAt: -1 });
+    const database = await readDatabase();
+    const searchText = search?.toLowerCase();
+    const recipes = database.recipes
+      .filter((recipe) => !category || recipe.category === category)
+      .filter((recipe) => !difficulty || recipe.difficulty === difficulty)
+      .filter((recipe) => !searchText
+        || recipe.title.toLowerCase().includes(searchText)
+        || recipe.description.toLowerCase().includes(searchText))
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .map((recipe) => withCreator(recipe, database));
 
     res.json(recipes);
   } catch (error) {
@@ -29,14 +34,10 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const recipe = await Recipe.findById(req.params.id)
-      .populate('createdBy', 'username email');
-
-    if (!recipe) {
-      return res.status(404).json({ message: 'Recipe not found' });
-    }
-
-    res.json(recipe);
+    const database = await readDatabase();
+    const recipe = database.recipes.find((candidate) => candidate._id === req.params.id);
+    if (!recipe) return res.status(404).json({ message: 'Recipe not found' });
+    res.json(withCreator(recipe, database));
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -44,42 +45,17 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', authenticate, isAdmin, async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      ingredients,
-      instructions,
-      prepTime,
-      cookTime,
-      servings,
-      category,
-      difficulty,
-      imageUrl,
-    } = req.body;
-
-    const recipe = new Recipe({
-      title,
-      description,
-      ingredients,
-      instructions,
-      prepTime,
-      cookTime,
-      servings,
-      category,
-      difficulty,
-      imageUrl,
+    const database = await readDatabase();
+    const recipe = {
+      ...req.body,
+      _id: createId(),
       createdBy: req.user._id,
-    });
-
-    await recipe.save();
-
-    const populatedRecipe = await Recipe.findById(recipe._id)
-      .populate('createdBy', 'username');
-
-    res.status(201).json({
-      message: 'Recipe created successfully',
-      recipe: populatedRecipe,
-    });
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    database.recipes.push(recipe);
+    await writeDatabase(database);
+    res.status(201).json({ message: 'Recipe created successfully', recipe: withCreator(recipe, database) });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -87,46 +63,18 @@ router.post('/', authenticate, isAdmin, async (req, res) => {
 
 router.put('/:id', authenticate, isAdmin, async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      ingredients,
-      instructions,
-      prepTime,
-      cookTime,
-      servings,
-      category,
-      difficulty,
-      imageUrl,
-    } = req.body;
-
-    let recipe = await Recipe.findById(req.params.id);
-
-    if (!recipe) {
-      return res.status(404).json({ message: 'Recipe not found' });
-    }
-
-    recipe = await Recipe.findByIdAndUpdate(
-      req.params.id,
-      {
-        title,
-        description,
-        ingredients,
-        instructions,
-        prepTime,
-        cookTime,
-        servings,
-        category,
-        difficulty,
-        imageUrl,
-        updatedAt: Date.now(),
-      },
-      { new: true }
-    ).populate('createdBy', 'username');
-
+    const database = await readDatabase();
+    const index = database.recipes.findIndex((recipe) => recipe._id === req.params.id);
+    if (index === -1) return res.status(404).json({ message: 'Recipe not found' });
+    database.recipes[index] = {
+      ...database.recipes[index],
+      ...req.body,
+      updatedAt: new Date().toISOString(),
+    };
+    await writeDatabase(database);
     res.json({
       message: 'Recipe updated successfully',
-      recipe,
+      recipe: withCreator(database.recipes[index], database),
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -135,14 +83,13 @@ router.put('/:id', authenticate, isAdmin, async (req, res) => {
 
 router.delete('/:id', authenticate, isAdmin, async (req, res) => {
   try {
-    const recipe = await Recipe.findById(req.params.id);
-
-    if (!recipe) {
+    const database = await readDatabase();
+    const remaining = database.recipes.filter((recipe) => recipe._id !== req.params.id);
+    if (remaining.length === database.recipes.length) {
       return res.status(404).json({ message: 'Recipe not found' });
     }
-
-    await Recipe.findByIdAndDelete(req.params.id);
-
+    database.recipes = remaining;
+    await writeDatabase(database);
     res.json({ message: 'Recipe deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });

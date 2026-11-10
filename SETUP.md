@@ -16,16 +16,9 @@ cd ..
 npm install
 ```
 
-## Step 3: Configure MongoDB
+## Step 3: Configure local storage
 
-### Option A: Local MongoDB
-Make sure MongoDB is installed and running on your machine.
-
-### Option B: MongoDB Atlas (Cloud)
-1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. Create a new cluster
-3. Get your connection string
-4. Update `server/.env` with your connection string
+The backend stores users and recipes in `server/data/database.json`. Set `DATA_DIR=./data` in `server/.env`.
 
 ## Step 4: Start the Backend
 

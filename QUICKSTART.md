@@ -127,7 +127,7 @@ npm install
 |---------|-----|---------|
 | Frontend | http://localhost:3000 | React app (Public & Admin) |
 | Backend | http://localhost:5000 | Express API server |
-| MongoDB | mongodb://localhost:27017 | Database |
+| JSON storage | server/data/database.json | Application data |
 
 ## Quick Test
 

@@ -276,9 +276,7 @@ Use `server/seed.js` to populate the database with 5 sample recipes:
 
 - [React Documentation](https://react.dev)
 - [Express.js Guide](https://expressjs.com)
-- [MongoDB Manual](https://docs.mongodb.com)
 - [JWT Introduction](https://jwt.io)
-- [Mongoose Docs](https://mongoosejs.com)
 
 ## ✨ Conclusion
 

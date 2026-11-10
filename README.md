@@ -42,7 +42,7 @@ A full-featured recipe sharing application built with MongoDB, Express, React, a
 
 ### Prerequisites
 - Node.js (v14 or higher)
-- MongoDB (local or MongoDB Atlas)
+- Node.js (v14 or higher)
 
 ### Backend Setup
 
@@ -58,19 +58,10 @@ npm install
 
 3. Configure environment variables:
    - Open `server/.env` file
-   - Update `MONGODB_URI` with your MongoDB connection string
+   - Set `DATA_DIR=./data`
    - Update `JWT_SECRET` with a secure secret key
 
-4. Start MongoDB (if running locally):
-```bash
-# Windows
-net start MongoDB
-
-# macOS/Linux
-sudo systemctl start mongod
-```
-
-5. Start the backend server:
+4. Start the backend server:
 ```bash
 npm run dev
 ```
@@ -104,14 +95,13 @@ This repository includes container, Jenkins, Ansible, and Kubernetes configurati
 - `server/Dockerfile` packages the Express API.
 - `Jenkinsfile` runs tests, publishes both images, and rolls them out to Kubernetes.
 - `ansible/site.yml` installs the deployment tools and applies the Kubernetes manifests.
-- `k8s/` contains the frontend, backend, MongoDB, services, and ingress resources.
+- `k8s/` contains the frontend, backend, services, and ingress resources.
 
 ### Jenkins setup
 
 Create these Jenkins credentials before running the pipeline:
 
 - `recipe-registry`: a Jenkins username/password credential for the container registry
-- `recipe-mongodb-uri`: the MongoDB connection string
 - `recipe-jwt-secret`: a strong JWT signing secret
 
 The Jenkins agent must have Docker, `kubectl`, and access to the target Kubernetes cluster. Set the `REGISTRY` build parameter to the registry/repository prefix (for example `ghcr.io/your-org`). The pipeline uses the `recipe` namespace and an Nginx ingress controller.
@@ -121,12 +111,11 @@ The Jenkins agent must have Docker, `kubectl`, and access to the target Kubernet
 Replace the example host in `ansible/inventory.ini`, then provide secrets through environment variables and run:
 
 ```bash
-export RECIPE_MONGODB_URI='mongodb://recipe-mongodb:27017/recipeDB'
 export RECIPE_JWT_SECRET='replace-with-a-long-random-secret'
 ansible-playbook -i ansible/inventory.ini ansible/site.yml
 ```
 
-The target host must already have `kubectl` installed and credentials configured for its Kubernetes cluster. The example MongoDB workload uses MongoDB 4.4 for compatibility with CPUs that do not support AVX; use a newer MongoDB version only on AVX-capable hosts. The example workload uses ephemeral storage; use a managed MongoDB service or replace `emptyDir` in `k8s/mongodb.yaml` with a persistent volume for production.
+The target host must already have `kubectl` installed and credentials configured for its Kubernetes cluster. User and recipe data is stored in `server/data/database.json`; the Kubernetes deployment mounts an ephemeral volume at `/app/data`, so data is lost when the backend pod is recreated.
 
 ## Usage
 

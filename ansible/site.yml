@@ -5,7 +5,6 @@
   vars:
     recipe_namespace: recipe
     recipe_manifest_dir: /opt/recipe/k8s
-    recipe_mongodb_uri: "{{ lookup('ansible.builtin.env', 'RECIPE_MONGODB_URI') }}"
     recipe_jwt_secret: "{{ lookup('ansible.builtin.env', 'RECIPE_JWT_SECRET') }}"
 
   tasks:
@@ -42,9 +41,8 @@
     - name: Require deployment secrets
       ansible.builtin.assert:
         that:
-          - recipe_mongodb_uri | length > 0
           - recipe_jwt_secret | length > 0
-        fail_msg: Set RECIPE_MONGODB_URI and RECIPE_JWT_SECRET before running Ansible.
+        fail_msg: Set RECIPE_JWT_SECRET before running Ansible.
 
     - name: Create the application namespace
       ansible.builtin.command:
@@ -68,7 +66,6 @@
           - recipe-secrets
           - -n
           - "{{ recipe_namespace }}"
-          - "--from-literal=MONGODB_URI={{ recipe_mongodb_uri }}"
           - "--from-literal=JWT_SECRET={{ recipe_jwt_secret }}"
           - --dry-run=client
           - -o
@@ -89,8 +86,7 @@
     - name: Apply application workloads
       ansible.builtin.command:
         cmd: >-
-          kubectl apply -f {{ recipe_manifest_dir }}/mongodb.yaml
-          -f {{ recipe_manifest_dir }}/backend.yaml
+          kubectl apply -f {{ recipe_manifest_dir }}/backend.yaml
           -f {{ recipe_manifest_dir }}/frontend.yaml
           -f {{ recipe_manifest_dir }}/ingress.yaml
           -n {{ recipe_namespace }}

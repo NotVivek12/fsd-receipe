@@ -20,11 +20,6 @@ spec:
             - name: http
               containerPort: 5000
           env:
-            - name: MONGODB_URI
-              valueFrom:
-                secretKeyRef:
-                  name: recipe-secrets
-                  key: MONGODB_URI
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
@@ -35,6 +30,11 @@ spec:
                 configMapKeyRef:
                   name: recipe-config
                   key: PORT
+            - name: DATA_DIR
+              value: /data
+          volumeMounts:
+            - name: application-data
+              mountPath: /data
           readinessProbe:
             httpGet:
               path: /healthz
@@ -47,6 +47,9 @@ spec:
               port: http
             initialDelaySeconds: 15
             periodSeconds: 20
+      volumes:
+        - name: application-data
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
