@@ -1,71 +1,102 @@
 .home-page {
   min-height: 100vh;
+  background:
+    radial-gradient(circle at 85% 12%, rgba(255, 209, 102, 0.45), transparent 22rem),
+    var(--cream);
 }
 
 .hero-section {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  text-align: center;
-  padding: 60px 20px;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 92px 2.5rem 72px;
+  position: relative;
+  overflow: hidden;
 }
 
 .hero-section h1 {
-  font-size: 48px;
-  margin-bottom: 15px;
-  font-weight: 700;
+  max-width: 850px;
+  font-size: clamp(3rem, 8vw, 7.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.085em;
+  margin-bottom: 25px;
+  font-weight: 900;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
 }
 
 .hero-section p {
-  font-size: 20px;
-  opacity: 0.9;
+  max-width: 550px;
+  font-size: 18px;
+  line-height: 1.6;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.hero-section::after {
+  content: 'YUM';
+  position: absolute;
+  right: 4%;
+  bottom: 8%;
+  color: var(--pink);
+  font-size: clamp(5rem, 15vw, 13rem);
+  font-weight: 900;
+  letter-spacing: -0.1em;
+  transform: rotate(-8deg);
+  -webkit-text-stroke: 3px var(--ink);
 }
 
 .filters-section {
-  background: white;
-  padding: 30px 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  background: var(--yellow);
+  padding: 26px 2.5rem;
+  border-top: 3px solid var(--ink);
+  border-bottom: 3px solid var(--ink);
 }
 
 .filters-container {
-  max-width: 1200px;
+  max-width: 1320px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
-  gap: 15px;
+  gap: 12px;
 }
 
 .search-input,
 .filter-select {
-  padding: 12px 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 15px;
-  transition: border-color 0.3s;
+  padding: 15px 18px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--paper);
+  transition: box-shadow 0.2s, transform 0.2s;
 }
 
 .search-input:focus,
 .filter-select:focus {
   outline: none;
-  border-color: #667eea;
+  outline: none;
+  box-shadow: 4px 4px 0 var(--ink);
+  transform: translate(-2px, -2px);
 }
 
 .recipes-container {
-  max-width: 1200px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 58px 2.5rem;
 }
 
 .loading,
 .no-recipes {
   text-align: center;
   padding: 60px 20px;
-  color: #666;
+  color: var(--muted);
 }
 
 .no-recipes h3 {
   font-size: 28px;
   margin-bottom: 10px;
-  color: #333;
+  color: var(--ink);
 }
 
 .recipes-grid {
@@ -94,7 +125,7 @@
 
 @media (max-width: 480px) {
   .hero-section {
-    padding: 40px 15px;
+    padding: 60px 1.25rem 40px;
   }
 
   .hero-section h1 {
@@ -102,7 +133,7 @@
   }
 
   .filters-section {
-    padding: 20px 15px;
+    padding: 20px 1.25rem;
   }
 
   .recipes-container {

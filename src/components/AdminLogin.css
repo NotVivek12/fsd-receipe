@@ -3,17 +3,18 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--blue);
   padding: 20px;
 }
 
 .admin-login-box {
-  background: white;
+  background: var(--paper);
   padding: 50px;
-  border-radius: 16px;
+  border: 3px solid var(--ink);
+  border-radius: 22px;
   width: 100%;
   max-width: 450px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 10px 10px 0 var(--ink);
 }
 
 .admin-header {
@@ -28,18 +29,19 @@
 }
 
 .admin-icon svg {
-  color: #667eea;
+  color: var(--orange);
 }
 
 .admin-header h2 {
   margin: 0 0 10px 0;
-  color: #333;
+  color: var(--ink);
   font-size: 32px;
+  font-weight: 900;
 }
 
 .admin-header p {
   margin: 0;
-  color: #666;
+  color: var(--muted);
   font-size: 14px;
 }
 
@@ -50,7 +52,7 @@
 .admin-login-box .form-group label {
   display: block;
   margin-bottom: 8px;
-  color: #555;
+  color: var(--ink);
   font-weight: 600;
   font-size: 14px;
 }
@@ -58,24 +60,26 @@
 .admin-login-box .form-group input {
   width: 100%;
   padding: 14px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
   font-size: 15px;
   transition: border-color 0.3s;
 }
 
 .admin-login-box .form-group input:focus {
   outline: none;
-  border-color: #667eea;
+  outline: none;
+  box-shadow: 3px 3px 0 var(--ink);
 }
 
 .btn-admin-login {
   width: 100%;
   padding: 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--orange);
+  color: var(--ink);
   border: none;
-  border-radius: 8px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
@@ -86,7 +90,7 @@
 
 .btn-admin-login:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+  box-shadow: 4px 4px 0 var(--ink);
 }
 
 .btn-admin-login:active {
@@ -94,7 +98,7 @@
 }
 
 .btn-admin-login:disabled {
-  background: linear-gradient(135deg, #a0a0a0 0%, #808080 100%);
+  background: #d7d0c7;
   cursor: not-allowed;
   transform: none;
 }
@@ -107,7 +111,7 @@
 .btn-back-home {
   background: none;
   border: none;
-  color: #667eea;
+  color: var(--ink);
   cursor: pointer;
   font-size: 15px;
   font-weight: 600;
@@ -118,7 +122,7 @@
 }
 
 .btn-back-home:hover {
-  color: #764ba2;
+  color: var(--orange);
   text-decoration: underline;
 }
 
