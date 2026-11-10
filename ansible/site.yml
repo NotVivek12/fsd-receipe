@@ -11,9 +11,7 @@
   tasks:
     - name: Install required deployment tools
       ansible.builtin.package:
-        name:
-          - docker.io
-          - kubectl
+        name: docker.io
         state: present
 
     - name: Enable Docker
@@ -21,6 +19,12 @@
         name: docker
         state: started
         enabled: true
+
+    - name: Verify kubectl is available
+      ansible.builtin.command:
+        cmd: kubectl version --client
+      register: kubectl_version
+      changed_when: false
 
     - name: Ensure the manifest directory exists
       ansible.builtin.file:

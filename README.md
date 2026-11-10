@@ -126,7 +126,7 @@ export RECIPE_JWT_SECRET='replace-with-a-long-random-secret'
 ansible-playbook -i ansible/inventory.ini ansible/site.yml
 ```
 
-The target host must already have credentials configured for its Kubernetes cluster. The example MongoDB workload uses ephemeral storage; use a managed MongoDB service or replace `emptyDir` in `k8s/mongodb.yaml` with a persistent volume for production.
+The target host must already have `kubectl` installed and credentials configured for its Kubernetes cluster. The example MongoDB workload uses ephemeral storage; use a managed MongoDB service or replace `emptyDir` in `k8s/mongodb.yaml` with a persistent volume for production.
 
 ## Usage
 
