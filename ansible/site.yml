@@ -25,6 +25,7 @@
         cmd: kubectl version --client
       register: kubectl_version
       changed_when: false
+      become: false
 
     - name: Ensure the manifest directory exists
       ansible.builtin.file:
@@ -49,11 +50,13 @@
       ansible.builtin.command:
         cmd: kubectl apply -f {{ recipe_manifest_dir }}/namespace.yaml
       changed_when: true
+      become: false
 
     - name: Apply application configuration
       ansible.builtin.command:
         cmd: kubectl apply -f {{ recipe_manifest_dir }}/configmap.yaml -n {{ recipe_namespace }}
       changed_when: true
+      become: false
 
     - name: Create application secrets
       ansible.builtin.command:
@@ -73,6 +76,7 @@
       register: recipe_secret
       changed_when: true
       no_log: true
+      become: false
 
     - name: Apply application secrets
       ansible.builtin.command:
@@ -80,6 +84,7 @@
         stdin: "{{ recipe_secret.stdout }}"
       changed_when: true
       no_log: true
+      become: false
 
     - name: Apply application workloads
       ansible.builtin.command:
@@ -90,3 +95,4 @@
           -f {{ recipe_manifest_dir }}/ingress.yaml
           -n {{ recipe_namespace }}
       changed_when: true
+      become: false
