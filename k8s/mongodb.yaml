@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recipe-mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recipe-mongodb
+  template:
+    metadata:
+      labels:
+        app: recipe-mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:7
+          ports:
+            - name: mongodb
+              containerPort: 27017
+          volumeMounts:
+            - name: mongodb-data
+              mountPath: /data/db
+      volumes:
+        - name: mongodb-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: recipe-mongodb
+spec:
+  selector:
+    app: recipe-mongodb
+  ports:
+    - name: mongodb
+      port: 27017
+      targetPort: mongodb

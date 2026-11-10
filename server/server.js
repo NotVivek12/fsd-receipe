@@ -23,6 +23,10 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/recipeDB'
 app.use('/api/auth', authRoutes);
 app.use('/api/recipes', recipeRoutes);
 
+app.get('/healthz', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: 'Something went wrong!' });

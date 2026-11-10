@@ -1,0 +1,88 @@
+---
+- name: Configure the recipe Kubernetes deployment host
+  hosts: recipe_servers
+  become: true
+  vars:
+    recipe_namespace: recipe
+    recipe_manifest_dir: /opt/recipe/k8s
+    recipe_mongodb_uri: "{{ lookup('ansible.builtin.env', 'RECIPE_MONGODB_URI') }}"
+    recipe_jwt_secret: "{{ lookup('ansible.builtin.env', 'RECIPE_JWT_SECRET') }}"
+
+  tasks:
+    - name: Install required deployment tools
+      ansible.builtin.package:
+        name:
+          - docker.io
+          - kubectl
+        state: present
+
+    - name: Enable Docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Ensure the manifest directory exists
+      ansible.builtin.file:
+        path: "{{ recipe_manifest_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Copy Kubernetes manifests
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../k8s/"
+        dest: "{{ recipe_manifest_dir }}/"
+        mode: "0644"
+
+    - name: Require deployment secrets
+      ansible.builtin.assert:
+        that:
+          - recipe_mongodb_uri | length > 0
+          - recipe_jwt_secret | length > 0
+        fail_msg: Set RECIPE_MONGODB_URI and RECIPE_JWT_SECRET before running Ansible.
+
+    - name: Create the application namespace
+      ansible.builtin.command:
+        cmd: kubectl apply -f {{ recipe_manifest_dir }}/namespace.yaml
+      changed_when: true
+
+    - name: Apply application configuration
+      ansible.builtin.command:
+        cmd: kubectl apply -f {{ recipe_manifest_dir }}/configmap.yaml -n {{ recipe_namespace }}
+      changed_when: true
+
+    - name: Create application secrets
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - create
+          - secret
+          - generic
+          - recipe-secrets
+          - -n
+          - "{{ recipe_namespace }}"
+          - "--from-literal=MONGODB_URI={{ recipe_mongodb_uri }}"
+          - "--from-literal=JWT_SECRET={{ recipe_jwt_secret }}"
+          - --dry-run=client
+          - -o
+          - yaml
+      register: recipe_secret
+      changed_when: true
+      no_log: true
+
+    - name: Apply application secrets
+      ansible.builtin.command:
+        cmd: kubectl apply -f -
+        stdin: "{{ recipe_secret.stdout }}"
+      changed_when: true
+      no_log: true
+
+    - name: Apply application workloads
+      ansible.builtin.command:
+        cmd: >-
+          kubectl apply -f {{ recipe_manifest_dir }}/mongodb.yaml
+          -f {{ recipe_manifest_dir }}/backend.yaml
+          -f {{ recipe_manifest_dir }}/frontend.yaml
+          -f {{ recipe_manifest_dir }}/ingress.yaml
+          -n {{ recipe_namespace }}
+      changed_when: true

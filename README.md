@@ -96,6 +96,38 @@ npm start
 
 The frontend will run on `http://localhost:3000`
 
+## CI/CD and deployment
+
+This repository includes container, Jenkins, Ansible, and Kubernetes configuration:
+
+- `Dockerfile` builds the React frontend and serves it with Nginx.
+- `server/Dockerfile` packages the Express API.
+- `Jenkinsfile` runs tests, publishes both images, and rolls them out to Kubernetes.
+- `ansible/site.yml` installs the deployment tools and applies the Kubernetes manifests.
+- `k8s/` contains the frontend, backend, MongoDB, services, and ingress resources.
+
+### Jenkins setup
+
+Create these Jenkins credentials before running the pipeline:
+
+- `recipe-registry`: a Jenkins username/password credential for the container registry
+- `recipe-mongodb-uri`: the MongoDB connection string
+- `recipe-jwt-secret`: a strong JWT signing secret
+
+The Jenkins agent must have Docker, `kubectl`, and access to the target Kubernetes cluster. Set the `REGISTRY` build parameter to the registry/repository prefix (for example `ghcr.io/your-org`). The pipeline uses the `recipe` namespace and an Nginx ingress controller.
+
+### Ansible setup
+
+Replace the example host in `ansible/inventory.ini`, then provide secrets through environment variables and run:
+
+```bash
+export RECIPE_MONGODB_URI='mongodb://recipe-mongodb:27017/recipeDB'
+export RECIPE_JWT_SECRET='replace-with-a-long-random-secret'
+ansible-playbook -i ansible/inventory.ini ansible/site.yml
+```
+
+The target host must already have credentials configured for its Kubernetes cluster. The example MongoDB workload uses ephemeral storage; use a managed MongoDB service or replace `emptyDir` in `k8s/mongodb.yaml` with a persistent volume for production.
+
 ## Usage
 
 ### For Everyone (No Login Required)
